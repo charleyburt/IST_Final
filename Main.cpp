@@ -7,11 +7,20 @@
 #include <iostream>
 #include <climits>
 #include <vector>
+#include "DLL.h"
+#include "Stack.h"
+#include "MinHeap.h"
+
+void FindShortestPath(double spot_curr, double spot_end, DLL<double> pathList, DLL<double>deadEnds){
+  std::cout<<"working"<<std::endl;
+}
+
+
 int main()
 {
   using namespace std;
 
-
+  cout << "Please enter file name: " << endl;
   string file;
   cin >> file;
 
@@ -35,11 +44,27 @@ int main()
 
   }
 
-  for(const auto& v : rows){
-    for (auto value : v){
-      cout << value << ",";
-    }
-    cout<<endl;
-  }
+//outputs the entire file
+  // for(const auto& v : rows){
+  //   for (auto value : v){
+  //     cout << value << ",";
+  //   }
+  //   cout<<endl;
+  // }
 
-}
+  cout << "Please enter start location: " << endl;
+  double start;
+  cin >> start;
+
+  cout << "Please enter end location: " << endl;
+  double end;
+  cin >> end;
+
+  vector<DLL<double>> paths;
+  DLL<double> pathList;
+  DLL<double> deadEnds;
+
+  FindShortestPath(start,end,pathList,deadEnds);
+
+
+  }
