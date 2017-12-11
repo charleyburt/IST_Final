@@ -70,6 +70,7 @@
 
 
   void InitializeStructures(){
+      // initialize distance and parent arrays to hold the correct number of locations
       dist = new int[table.size()];
       parent = new int[table.size()];
 
@@ -83,11 +84,13 @@
           if (nonbricks.contains(i) && i != start-1u){
               dist[i] = INT_MAX;            // initialize the distance to 'i' as INFINITY
               parent[i] = 0;                // initialize the parent of 'i' as zero
-              options.insert(i, INT_MAX);   // insert 'i' into the MinHeap
+              options.insert(i+1, INT_MAX);   // insert 'i' into the MinHeap
           }
       }
   }
 
+
+  // Main method
   int main(){
 
     // Read in the file and determine start/finish locations
@@ -99,7 +102,7 @@
     // initialize MinHeap, Distance array, and Parent array
     InitializeStructures();
 
-    cout << "Options MinHeap: " << options << endl;
+    cout << options << endl;
 
     return EXIT_SUCCESS;
 

@@ -1,106 +1,191 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <iomanip>
+#include "MinHeap.h"
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <climits>
-#include <vector>
-#include "DLL.h"
-#include "MinHeap.h"
+#include <stdlib.h>
+#include "Stack.h"
 
 
-  using namespace std;
+int main() {
+    using namespace std;
 
-  // GLOBAL VARIABLES
-  vector<vector<double>> table;           //will hold file we read in
-  int start;                           //where the gremlin will start
-  int finish;                          //where the twinkie is
-  DLL<int> nonbricks;                     //will hold the available locations
-  MinHeap<int> options;                   //will hold all the options
-  int *dist;      //will hold distance to each spot
-  int *parent;    //will hold the parent of each spot
+    // Choose hex map to use
+    string file = "20x20.txt";
 
+    // Find the number of tiles in the game
+    int tiles = 0;
+    ifstream checkTilesFile(file);
+    string junk;
+    while(getline(checkTilesFile, junk)) {
+        tiles++;
+    }
 
+    // Notify user of the board size and ask for starting ending infromation
+    cout << "There are " << tiles << " tiles." << endl;
+    cout << "Choose between 1 and " << tiles << " for start and finish" << endl;
 
-  void FileInput(){
-    // get table from text file
-    cout << "Please enter file name: " << endl;
-    string file;
-    cin >> file;
+    // Ask user to enter where the gremlin starts
+    cout << "Enter starting tile: ";
+    int start;
+    cin >> start;
 
-    ifstream inFile;
-    inFile.open(file);
+    // Ask user to enter where the twinkies are located
+    cout << "Enter ending tile: ";
+    int finish;
+    cin >> finish;
 
-    string line;
+    // Create a 2 dimensional array to house the hex map
+    double gameTiles [tiles][tiles];
 
-    while(getline(inFile,line)){
-      istringstream ss(line);
-      vector<double> columns;
+    // Create file stream to read in values from selected text file
+    ifstream inFile(file);
 
-      string token;
-      while(getline(ss,token,',')){
-        double v = atof(token.c_str());
-        columns.push_back(v);
-      }
-      table.push_back(columns);
+    //
+    int k = 0;
+    double num = 0.0;
+    int times = 0;
+    string token;
+    for(int i = 0; i < tiles*tiles; i++) {
+
+        inFile >> token;
+
+        size_t pos = token.find(",");
+        string sub = token.substr(0,pos);
+
+        num = stod (sub);
+
+        gameTiles[k][times%tiles] = num;
+
+        times++;
+        if(times%tiles == 0) {
+            k++;
+        }
+    }
+
+    // Close file stream
+    inFile.close();
+
+//     double gameTiles[tiles][tiles] = {{0.0, -1.0, -1.0, -1.0, 4.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0},
+// {1.0, 0.0, 1.0, -1.0, 4.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0},
+// {-1.0, -1.0, 0.0, 1.0, -1.0, 1.0, 4.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0},
+// {-1.0, -1.0, 1.0, 0.0, -1.0, -1.0, 4.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0},
+// {1.0, -1.0, -1.0, -1.0, 0.0, 1.0, -1.0, 2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0 },
+// {-1.0, -1.0, 1.0, -1.0, 4.0, 0.0, 4.0, -1.0, -1.0, 2.0, -1.0, -1.0, -1.0, -1.0 },
+// {-1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 0.0, -1.0, -1.0, 2.0, 4.0, -1.0, -1.0, -1.0 },
+// {-1.0, -1.0, -1.0, -1.0, 4.0, -1.0, -1.0, 0.0, -1.0, -1.0, -1.0, 2.0, -1.0, -1.0},
+// {-1.0, -1.0, -1.0, -1.0, 4.0, 1.0, -1.0, 2.0, 0.0, 2.0, -1.0, 2.0, 1.0, -1.0},
+// {-1.0, -1.0, -1.0, -1.0, -1.0, 1.0, 4.0, -1.0, -1.0, 0.0, 4.0, -1.0, 1.0, 1.0},
+// {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 4.0, -1.0, -1.0, 2.0, 0.0, -1.0, -1.0, 1.0},
+// {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 2.0, -1.0, -1.0, -1.0, 0.0, 1.0, -1.0},
+// {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 2.0, -1.0, 2.0, 0.0, 1.0 },
+// {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 2.0, 4.0, -1.0, 1.0, 0.0}};
+
+    // Create boolean array to track brick tiles of hex map
+    bool *isBrick = new bool[tiles];
+
+    // Iterate over isBrick array ensuring all values are true
+    for(int i = 0; i < tiles; i++) {
+        isBrick[i] = true;
+    }
+
+    // Iterate over isBrick array checking associated tiles in hex map, if they are
+    // not brick set the value in isBrick array to false
+    for(int i = 0; i < tiles; i++) {
+        for(int j = 0; j < tiles; j++) {
+            if(gameTiles[j][i] != -1 && i != j) {
+                isBrick[i] = false;
+                j = tiles;
+            }
+        }
+    }
+
+    int *dist = new int[tiles];
+
+    int *prev = new int[tiles];
+
+    // dist[source] <- 0
+    dist[start-1] = 0;
+
+    // create vertex set Q
+    MinHeap<int> Q;
+
+//########################################################################
+
+    // for each vertex v in Graph:
+    //       if v ≠ source
+    //          dist[v] ← INFINITY       // Unknown distance from source to v
+    //          prev[v] ← UNDEFINED      // Predecessor of v
+
+    //      Q.add_with_priority(v, dist[v])
+
+    for(int i = 0; i < tiles; i++) {
+        if(i != start-1) {
+            dist[i] = INT_MAX;
+            prev[i] = 0;
+        }
+        if(!isBrick[i]) {
+            Q.insert(i, dist[i]);
+        }
 
     }
 
-    // get starting and ending locations
-    cout << "Please enter start location: " << endl;
-    cin >> start;
+    cout << Q << endl;
+    cout << INT_MAX + 1 <<endl;
 
-    cout << "Please enter end location: " << endl;
-    cin >> finish;
-  }
+//########################################################################
 
-  void FindNonbricks(vector<vector<double>> table){
+    // while Q is not empty:                // The main loop
+    //      u ← Q.extract_min()             // Remove and return best vertex
+    //      for each neighbor v of u:       // only v that is still in Q
+    //          alt ← dist[u] + length(u, v)
+    //          if alt < dist[v]
+    //              dist[v] ← alt
+    //              prev[v] ← u
+    //              Q.decrease_priority(v, alt)
 
-    for(unsigned i = 0; i<table.size(); i++){       //for the columns
-      for (unsigned j = 0; j<table.size(); j++){    //for the rows
-        if (table[j][i] > 0){                         //if there is a possible move in that column
-          nonbricks.addLast(i);                     //add it to nonbricks
-          j = table.size();                         //pop out of that column
-        }//end if
-      }//end rows
-    }//end columns
-  }//end FindBricks
+    while(!Q.isEmpty()) {
+        int u = Q.removeMin();
 
+        for(int i = 0; i < tiles; i++) {
+            if(!isBrick[i]) {
+                int alt = dist[u] + gameTiles[u][i];
+                if(gameTiles[u][i] >= 0 && alt < dist[i]) {
+                    dist[i] = alt;
+                    prev[i] = u;
+                    Q.decrease_priority(i, alt);
+                }
+            }
+        }
+        if(u == finish-1) {
+            break;
+        }
+    }
 
-  void InitializeStructures(){
-      dist = new int[table.size()];
-      parent = new int[table.size()];
+//########################################################################
+    // from here on is printing off the shortest path
+    int createPathStack = finish-1;
 
-      options.insert(start-1,0);  // place the starting location as the first value in the heap
-      dist[start-1] = 0;        // set the distance of the start value to 0
+    Stack<int> stack;
 
-      // loop through every location
-      for (unsigned i = 0; i < table.size(); i++){
+    while(createPathStack != start-1) {
+        stack.push(createPathStack+1);
+        createPathStack = prev[createPathStack];
+    }
 
-          // if the current location is not a brick, and not the starting location...
-          if (nonbricks.contains(i) && i != start-1u){
-              dist[i] = INT_MAX;            // initialize the distance to 'i' as INFINITY
-              parent[i] = 0;                // initialize the parent of 'i' as zero
-              options.insert(i, INT_MAX);   // insert 'i' into the MinHeap
-          }
-      }
-  }
+    stack.push(createPathStack+1);
 
-  int main(){
+    cout << "[";
 
-    // Read in the file and determine start/finish locations
-    FileInput();
+    while(stack.size() > 0) {
+        if(stack.size() > 1) {
+            cout << stack.pop() << ", ";
+        } else {
+            cout << stack.pop();
+        }
+    }
 
-    // find accessible locations
-    FindNonbricks(table);
+    cout << "]" << endl;
 
-    // initialize MinHeap, Distance array, and Parent array
-    InitializeStructures();
-
-    cout << "Options MinHeap: " << options << endl;
-
-    return EXIT_SUCCESS;
-
-  }
+}
