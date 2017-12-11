@@ -148,7 +148,7 @@ public:
    *
    * \return index of the element if found, -1 if not found.
    */
-  int contains(const T &d) const;
+  bool contains(const T &d) const;
 
   /**
    * Get an iterator to the last element in the list.
@@ -419,19 +419,19 @@ template <class T> void DLL<T>::clear() {
 /*
  * Search for an element in the list.
  */
-template <class T> int DLL<T>::contains(const T &d) const {
+template <class T> bool DLL<T>::contains(const T &d) const {
   Node *pCurr = pHead;
   int i = 0;
 
   while (pCurr != 0) {
     if (pCurr->data == d) {
-      return i;
+      return true;
     }
     pCurr = pCurr->pNext;
     i++;
   }
 
-  return -1;
+  return false;
 }
 
 /*
