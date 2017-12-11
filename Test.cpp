@@ -73,7 +73,7 @@
       dist = new int[table.size()];
       parent = new int[table.size()];
 
-      options.insert(start,0);  // place the starting location as the first value in the heap
+      options.insert(start-1,0);  // place the starting location as the first value in the heap
       dist[start-1] = 0;        // set the distance of the start value to 0
 
       // loop through every location

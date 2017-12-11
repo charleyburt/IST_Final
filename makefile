@@ -1,6 +1,5 @@
-Main:	Main.cpp
-	g++ -std=c++11 -Wall Main.cpp -o Main
-	
-clean: 
-	rm Main
+Test:	Test.cpp
+	g++ -std=c++11 -Wall Test.cpp -o Test
 
+clean:
+	rm Test
