@@ -73,6 +73,14 @@ public:
    */
   void insert(const T &val, int key);
 
+
+  /**
+  *updating the priority value of a specific elements
+  *parameters are value we are looking for, and where to place it
+  *
+  */
+  void DecreaseKey(const T &val, int k);
+
   /**
    * Determine if this min-heap is empty.
    *
@@ -328,4 +336,25 @@ template <class T> void MinHeap<T>::swap(unsigned i, unsigned j) {
   typename MinHeap<T>::Node *t = vec[i];
   vec[i] = vec[j];
   vec[j] = t;
+}
+
+
+
+/**
+*updating the priority value of a specific elements
+*parameters are value we are looking for, and where to place it
+*
+*/
+template <class T> void MinHeap<T>::DecreaseKey(const T &val, int k) {
+
+  for(int i = 1; i < vec.size(); i++) {
+    if(vec[i]->data == val) {
+      vec[i]->key = k;
+    }
+  }
+
+  for(int i = vec.size()/2; i >=1; i--) {
+      minHeapify(i);
+  }
+
 }
