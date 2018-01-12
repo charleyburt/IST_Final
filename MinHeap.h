@@ -72,8 +72,14 @@ public:
    * \param key Key value associated with val.
    */
   void insert(const T &val, int key);
-  
-  void decrease_priority(const T &val, int k);
+
+
+  /**
+  *updating the priority value of a specific elements
+  *parameters are value we are looking for, and where to place it
+  *
+  */
+  void DecreaseKey(const T &val, int k);
 
   /**
    * Determine if this min-heap is empty.
@@ -91,16 +97,16 @@ public:
    *
    * \return the out ostream object
    */
-    friend std::ostream &operator<<(std::ostream &out, const MinHeap<T> &heap) {
+  friend std::ostream &operator<<(std::ostream &out, const MinHeap<T> &heap) {
     out << "[";
     unsigned n = heap.size();
     if (n == 0u) {
       out << "]";
     } else {
       for (unsigned i = 1u; i < n; i++) {
-        out << heap.vec.at(i)->data + 1 << "/" << heap.vec.at(i)->key << ", ";
+        out << heap.vec.at(i)->data << ", ";
       }
-      out << heap.vec.at(n)->data + 1 << "/" << heap.vec.at(n)->key ;
+      out << heap.vec.at(n)->data;
       out << "]";
     }
     return out;
@@ -332,16 +338,23 @@ template <class T> void MinHeap<T>::swap(unsigned i, unsigned j) {
   vec[j] = t;
 }
 
-template <class T> void MinHeap<T>::decrease_priority(const T &val, int k) {
-  
+
+
+/**
+*updating the priority value of a specific elements
+*parameters are value we are looking for, and where to place it
+*
+*/
+template <class T> void MinHeap<T>::DecreaseKey(const T &val, int k) {
+
   for(int i = 1; i < vec.size(); i++) {
     if(vec[i]->data == val) {
       vec[i]->key = k;
     }
   }
-  
+
   for(int i = vec.size()/2; i >=1; i--) {
       minHeapify(i);
   }
-  
+
 }
